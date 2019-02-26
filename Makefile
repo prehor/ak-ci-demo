@@ -36,7 +36,7 @@ all: clean build start logs test
 # Build a new image, run the tests and clean
 .PHONY: ci
 ci: all
-	@$(MAKE) clean
+	@$(MAKE) down
 
 # Build a new image with using the Docker layer caching
 .PHONY: build
