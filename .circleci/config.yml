@@ -10,7 +10,7 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          name: Download Docker images
+          name: Pull Docker images
           command: |
             make docker-pull docker-pull-dependencies
       - run:
@@ -18,11 +18,11 @@ jobs:
           command: |
             make build
       - run:
-          name: Test Docker image
+          name: Run tests
           command: |
             make test
       - run:
-          name: Security scan
+          name: Run security scan
           command: |
             make snyk
       - deploy:
