@@ -24,7 +24,7 @@ TEST_ARGS		?= -it --rm \
 			   -e SPEC_OPTS="--format doc --tty" \
 			   --link `cat .docker-create`:$(DOCKER_NAME) \
 			   -v /var/run/docker.sock:/var/run/docker.sock \
-			   -w /home/$(DOCKER_NAME)
+			   -w /project/$(shell basename $(CURDIR))
 TEST_CMD		?= rspec
 
 SNYK_ARGS		?= -it --rm \
@@ -99,7 +99,7 @@ shell sh: start
 .PHONY: test
 test: start
 	docker create $(TEST_ARGS) sicz/dockerspec $(TEST_CMD) | tee .docker-test
-	docker cp $$PWD `cat .docker-test`:/home
+	docker cp $$PWD `cat .docker-test`:/project
 	docker start -i `cat .docker-test`
 	rm -f .docker-test
 
