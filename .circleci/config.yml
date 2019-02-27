@@ -10,11 +10,19 @@ jobs:
       - setup_remote_docker:
           version: 18.06.0-ce
       - run:
-          name: sicz/ak-ci-demo:latest
+          name: Build Docker image
           command: |
-            make ci
+            make build
+      - run:
+          name: Test Docker image
+          command: |
+            make test
+      - run:
+          name: Security scan
+          command: |
+            make snyk
       - deploy:
-          name: Push images to the Docker Hub
+          name: Push image to the Docker Hub
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWD}
