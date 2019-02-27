@@ -141,6 +141,15 @@ run up: down
 clean: down
 	rm -fv .docker-*
 
+# Pull Docker images
+.PHONY: docker-pull docker-pull-dependencies
+docker-pull:
+	docker pull $(DOCKER_IMAGE)
+
+docker-pull-dependencies:
+	docker pull sicz/dockerspec
+	docker pull snyk/snyk-cli:docker
+
 # Push Docker image to Docker hub
 .PHONY: docker-push
 docker-push: build
