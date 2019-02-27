@@ -17,7 +17,6 @@ CREATE_ARGS		?= --expose 80 \
 			   --publish 80:80
 
 TEST_RUN		?= docker run $(TEST_ARGS) sicz/dockerspec
-TEST_CMD		?= rspec --format doc --tty
 TEST_ARGS		?= -it --rm \
 			   -e DOCKER_IMAGE=$(DOCKER_IMAGE) \
 			   -e SERVICE_NAME=$(DOCKER_NAME) \
@@ -26,12 +25,21 @@ TEST_ARGS		?= -it --rm \
 			   --link `cat .docker-create`:$(DOCKER_NAME) \
 			   -v /var/run/docker.sock:/var/run/docker.sock \
 			   -w /home/$(DOCKER_NAME)
+TEST_CMD		?= rspec
+
+SNYK_ARGS		?= -it --rm \
+			   -e SNYK_TOKEN=$$SNYK_TOKEN \
+			   -e MONITOR=true \
+			   -v /var/run/docker.sock:/var/run/docker.sock
+SNYK_CMD		?= test \
+			   --docker $(DOCKER_IMAGE) \
+			   --file=/project/Dockerfile
 
 ### MAKE_TARGETS ###############################################################
 
 # Build a new image and run the tests
 .PHONY: all
-all: clean build start logs test
+all: clean build start logs test snyk
 
 # Build a new image, run the tests and clean
 .PHONY: ci
@@ -94,6 +102,12 @@ test: start
 	docker cp $$PWD `cat .docker-test`:/home
 	docker start -i `cat .docker-test`
 	rm -f .docker-test
+
+.PHONY: snyk
+snyk: start
+	docker create $(SNYK_ARGS) snyk/snyk-cli:docker $(SNYK_CMD) | tee .docker-snyk
+	docker cp $$PWD `cat .docker-snyk`:/project
+	docker start -i `cat .docker-snyk`
 
 # Run the shell in the test container
 .PHONY: test-shell tsh
