@@ -4,4 +4,8 @@
 *~
 
 # Info about running containers
-.docker-*
+/.docker-*
+
+# Snyk report files
+/snyk-*
+/snyk_*
